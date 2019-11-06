@@ -1,0 +1,27 @@
+phoneBook={}
+def add():
+    name=str(input('Give the name for the new contact: '))
+    number=str(input('Give the number for the new contact: '))
+    
+    phoneBook[name] = number
+    return phoneBook
+    
+def search(nameSearch):
+    print('Number for', nameSearch, 'is', phoneBook[nameSearch])
+
+while True:
+    print('Phone book ver. 1.0.1')
+    print('1) Add new number to the directory')
+    print('2) Search for a contact')
+    print('0) Quit')
+    value=int(input('What would you like to do?: '))
+    
+    if value==1:
+        add()
+    elif value==2:
+        inputName=str(input('Input the name you want to search in the directory: '))
+        search(inputName)
+    elif value==0:
+        break
+    else:
+        print('Error: Invalid Input')
