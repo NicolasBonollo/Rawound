@@ -1,11 +1,7 @@
-
-
 // BUDGET CONTROLLER
 
 var budgetController = (function() {
-    
-    
-//////////////// 2 constructors to differentiate the inputs
+
     var Expense = function (id, description, value) {
         this.id = id;
         this.description = description;
@@ -34,7 +30,6 @@ var budgetController = (function() {
         this.value = value;
     };
     
-    
     var calculateTotal = function(type) {
       
         var sum = 0;
@@ -48,10 +43,7 @@ var budgetController = (function() {
         data.totals[type] = sum;
     };
     
-    
-    
-//////////////// Data object that receives the inputs
-    var data = {
+        var data = {
         allItems: {
             exp: [],
             inc: [],
@@ -67,16 +59,9 @@ var budgetController = (function() {
 
     };
     
-    
     return {
         addItem: function(type, des, val) {
             var newItem, ID;
-            
-            // [1 2 3 4 5], next ID = 6
-            // Not the best solution (might need to delete some IDs)
-            // We need ID to be last ID + 1
-            
-            // Create new ID
             
             if (data.allItems[type].length > 0) {
                 
@@ -87,8 +72,6 @@ var budgetController = (function() {
                 ID =0;
                 
             }
-                
-            // Create new item based on 'inc' or 'exp' type
             
             if (type === 'exp') {
             
@@ -99,12 +82,8 @@ var budgetController = (function() {
                 newItem = new Income(ID, des, val);
                 
             }
-            
-            // Push it into our data structure
-            
+                  
             data.allItems[type].push(newItem);
-            
-            // Return the new element
             
             return newItem;
         },
@@ -120,7 +99,7 @@ var budgetController = (function() {
                 
             });
             
-            index = ids.indexOf(id); // defines the array element of the selected id (with command "indexOf")
+            index = ids.indexOf(id);
             
             if (index !== -1) {
                 data.allItems[type].splice(index, 1);
@@ -130,17 +109,11 @@ var budgetController = (function() {
         
         
         calculateBudget: function() {
-          
-            // Calculate total income and expenses
             
             calculateTotal('exp');
             calculateTotal('inc');
             
-            // Calculate the budget: income - expenses
-            
             data.budget = data.totals.inc - data.totals.exp;
-            
-            // Calculate the percentage of income that we spent
             
             if (data.totals.inc > 0) {
                 
@@ -182,10 +155,6 @@ var budgetController = (function() {
         
     };
     
-    
-
-    
-    
 })();
 
 
@@ -212,12 +181,6 @@ var UIController = (function() {
     var formatNumber = function(num, type) {
           
             var numSplit, int, dec, type;
-            
-            /*
-            + or - before number
-            exactly 2 decimal points
-            comma separating the thousands
-            */
             
             num = Math.abs(num);
             num = num.toFixed(2);
@@ -257,8 +220,6 @@ var UIController = (function() {
             
             var html, newHtml, element;
             
-            // Create HTML string with placeholder text
-            
             if (type === 'inc') {
                 
             element = DOMstrings.incomeContainer;
@@ -272,13 +233,10 @@ var UIController = (function() {
             html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
             
             }
-            // Replace the placeholder text with some actual data
             
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description)
             newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
-            
-            // Insert the HTML into the DOM
             
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
             
@@ -292,7 +250,6 @@ var UIController = (function() {
             
             
         },
-        
         
         clearFields: function() {
            
@@ -349,8 +306,6 @@ var UIController = (function() {
             var now, months, month, year;
             
             now = new Date();
-            // var christmas = new Date(2019, 11, 25);
-            
             
             months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             month = now.getMonth();
@@ -385,10 +340,6 @@ var UIController = (function() {
     
 })();
 
-
-
-
-
 // GLOBAL APP CONTROLLER
 
 var controller = (function(budgetCtrl, UICtrl) {
@@ -419,15 +370,9 @@ var controller = (function(budgetCtrl, UICtrl) {
     
     var updateBudget = function() {
         
-        // 1. Calculate the budget
-        
         budgetCtrl.calculateBudget();
         
-        // 2. Return the budget 
-        
         var budget = budgetCtrl.getBudget();
-        
-        // 3. Display the budget on the UI
         
        UICtrl.displayBudget(budget);
         
@@ -435,57 +380,31 @@ var controller = (function(budgetCtrl, UICtrl) {
     
     
     var updatePercentages = function() {
-        
-        // 1. Calculate the percentages
-        
+
         budgetCtrl.calculatePercentages();
-        
-        // 2. Read percentages from the budget controller
-        
+
         var percentages = budgetCtrl.getPercentages();
-        
-        // 3. Update the UI with the new percentages
-        
+
         UICtrl.displayPercentages(percentages);
         
     }
-    
-    
-    
+
     var ctrlAddItem = function() {
         
         var input, newItem;
-        
-        // TO DO LIST
-        
-        // 1. Get the field input data
-        
+
         input = UICtrl.getInput();
-        
-        //Input only works if there is a description and value in the fields
-        
+
         if (input.description !== "" && !isNaN(input.value) && input.value > 0) {
-            
-        
-        // 2. Add the item to the budget controller
-        
+
         newItem = budgetCtrl.addItem(input.type, input.description, input.value);
-        
-        // 3. Add the item to the UI
-        
+
         UICtrl.addListItem(newItem, input.type);
-        
-        // 4 Clear the fields
-        
+ 
         UICtrl.clearFields();
-        
-        
-        // 5 Calculate and update budget
-        
+
         updateBudget();
-            
-        // 6. Calculate and update percentages
-        
+
         updatePercentages();
             
         }
@@ -501,32 +420,22 @@ var controller = (function(budgetCtrl, UICtrl) {
         
         if (itemID) {
             
-            // inc-1
             splitID = itemID.split('-');
             type = splitID[0];
             ID = parseInt(splitID[1]);
-            
-            // 1. Delete the item from the data structure
-            
+
             budgetCtrl.deleteItem(type, ID);
-            
-            // 2. Delete the item from the UI
-            
+
             UICtrl.deleteListItem(itemID);
-            
-            // 3. Update and show the new budget
-            
+
             updateBudget();
-            
-            // 4. Calculate and update percentages
-        
+
             updatePercentages();            
                 
         }
         
     };
-    
-    
+
     return {
         init: function() {
             console.log('The application has started.');
@@ -537,60 +446,14 @@ var controller = (function(budgetCtrl, UICtrl) {
                 budget: 0,
                 totalInc: 0,
                 totalExp: 0,
-                percentage: -1  // As long as it's < 0 it's okay
+                percentage: -1
 
             });
             setupEventListeners();
         }
     };
 
-
 })(budgetController, UIController);
 
-
-
 controller.init();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
