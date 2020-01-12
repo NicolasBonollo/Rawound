@@ -1,0 +1,95 @@
+list=[]
+def chooseFile(n):
+    try:
+        readfile.close()
+    except:
+        pass
+    readfile=open(n, "r")
+    readfile.readline()
+    for row in readfile:
+        list.append(row)
+    town=n.split(".")
+    print("Loaded weather data from", town[0].capitalize())
+    print("")
+
+def seeData(d):
+    detail=d.split(".")
+    day="2019-"+detail[1]+"-"+detail[0]
+    
+    for row in list:
+        arr2=row.replace('"', '')
+        arr=arr2.split(";")
+        if day==arr[0]:
+            print("The weather on", d, "was on average", arr[2], "centigrade")
+            print("The lowest temperature was", arr[3], "and the highest temperature was", arr[4])
+            print("There was", arr[1], "mm rain")
+    print("")
+
+def calcAv():
+    
+    sum=0
+    sumlow=0
+    sumhigh=0
+    
+    for row in list:
+        arr2=row.replace('"', '')
+        arr=arr2.split(";")
+        mean=float(arr[2])
+        meanlow=float(arr[3])
+        meanhigh=float(arr[4])
+        
+        sum=sum+mean
+        sumlow=sumlow+meanlow
+        sumhigh=sumhigh+meanhigh
+        
+    average=round(sum/len(list),1)
+    averageLow=round(sumlow/len(list),1)
+    averageHigh=round(sumhigh/len(list),1)
+    print("The average temperature for the", len(list), "day period was", average)
+    print("The average lowest temperature was", averageLow)
+    print("The average highest temperature was", averageHigh)
+    print("")
+
+
+def print_temperature_line(): 
+    for row in list:
+        arr2=row.replace('"', '')
+        arr=arr2.split(";")
+        detail=arr[0].split("-")
+        day=detail[2]
+        month=detail[1]
+        temp=int(round(float(arr[2]),0))
+        print(day + "." + month + " ", end="")
+        print("   "*(temp+5) + "-", end="")
+        print("")
+
+
+def print_temperature_axis():
+    print("      ", end="")
+    for i in range(-5,16):
+        print("{:02d} ".format(i), end="")
+    print("")
+    print("")
+
+
+while True:
+    print("""ACME WEATHER DATA APP
+1) Choose weather data file
+2) See data for selected day
+3) Calculate average statistics for the data
+4) Print a scatterplot of the average temperatures
+0) Quit program""")
+    firstInput=input("Choose what to do: ")
+    if firstInput=="1":
+        name=input("Give name of the file: ")
+        chooseFile(name)
+    elif firstInput=="2":
+        date=input("Give a date (dd.mm): ")
+        seeData(date)
+    elif firstInput=="3":
+        calcAv()
+    elif firstInput=="4":
+        print_temperature_line()
+        print_temperature_axis()
+    elif firstInput=="0":
+        break
